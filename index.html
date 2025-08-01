@@ -3,419 +3,1145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grok Terminal</title>
+    <title>The Graffiti Project</title>
+    <link rel="icon" type="image/x-icon" href="pfp.png">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Permanent+Marker&family=Fredoka:wght@300;400;500;600;700&display=swap');
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            background: #0a0a0a;
-            color: #00ff41;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.4;
+            font-family: 'Fredoka', sans-serif;
+            background: #2a2a2a;
+            color: #ffffff;
             overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
         }
-        
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.1) 2px,
+                    rgba(0,0,0,0.1) 4px
+                );
+            z-index: -1;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px;
+            background: #3a3a3a;
+            position: relative;
+        }
+
+        .welcome-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="8" fill="%23555" opacity="0.3">WALL</text></svg>') repeat;
+            z-index: -1;
+        }
+
+        .welcome-screen.hidden {
+            display: none;
+        }
+
+        .gallery-screen {
+            display: none;
+            padding: 20px;
+            background: #2a2a2a;
+        }
+
+        .gallery-screen.active {
+            display: block;
+        }
+
+        .logo-container {
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px #2c3e50, 6px 6px 0px #34495e;
+            transform: rotate(-2deg);
+        }
+
+        /* Remove the animation */
+        @keyframes graffiti-glow {
+            /* Removed */
+        }
+
+        .logo-accent {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: #f39c12;
+            border-radius: 50%;
+            margin-left: 20px;
+            vertical-align: middle;
+            border: 4px solid #e74c3c;
+        }
+
+        .gallery-subtitle {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #3498db;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        .welcome-content {
+            max-width: 700px;
+            margin-bottom: 50px;
+        }
+
+        .welcome-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            font-weight: 400;
+            color: #f39c12;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0px #2c3e50;
+            transform: rotate(1deg);
+        }
+
+        .welcome-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ecf0f1;
+            margin-bottom: 40px;
+            font-weight: 400;
+            background: rgba(52, 73, 94, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid #e74c3c;
+        }
+
+        .project-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 25px;
+            background: #34495e;
+            border-radius: 15px;
+            border: 3px solid #f39c12;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-5px) rotate(1deg);
+            background: #2c3e50;
+            border-color: #e74c3c;
+        }
+
+        .detail-number {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .enter-btn {
+            background: #e74c3c;
+            border: none;
+            padding: 20px 45px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 25px;
+            font-family: 'Fredoka', sans-serif;
+            border: 4px solid #f39c12;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: #c0392b;
+            border-color: #e67e22;
+        }
+
+        .update-notice {
+            background: #f39c12;
+            color: white;
+            padding: 18px 35px;
+            border-radius: 25px;
+            font-size: 1rem;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border: 4px solid #e74c3c;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        /* X.com Button */
+        .x-button {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #e74c3c;
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 3px solid #f39c12;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            text-shadow: 1px 1px 0px #2c3e50;
+        }
+
+        .x-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            border-color: #e67e22;
+        }
+
+        .x-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Gallery Styles */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            min-height: 100vh;
         }
-        
-        .ascii-header {
+
+        .gallery-header {
             text-align: center;
-            color: #00ff41;
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 80px;
+            padding: 60px 0;
+            background: #34495e;
+            border-radius: 20px;
+            border: 3px solid #e74c3c;
         }
-        
-        .terminal {
-            background: #111;
-            border: 2px solid #00ff41;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+
+        .gallery-header h1 {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            transform: rotate(-1deg);
+            text-shadow: 3px 3px 0px #2c3e50, 6px 6px 0px #34495e;
+        }
+
+        .gallery-header .logo-accent {
+            width: 40px;
+            height: 40px;
+            margin-left: 15px;
+        }
+
+        .subtitle {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            color: #3498db;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: #34495e;
+            border: 3px solid #3498db;
+            padding: 12px 20px;
+            color: #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 15px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            text-shadow: 1px 1px 0px #2c3e50;
+        }
+
+        .back-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #e74c3c;
+            transform: translateY(-2px);
+        }
+
+        .gallery-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0px #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+            margin-bottom: 80px;
+        }
+
+        .video-section {
+            background: #34495e;
+            padding: 60px 40px;
+            border-radius: 20px;
+            border: 3px solid #f39c12;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #f39c12;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px #2c3e50, 6px 6px 0px #34495e;
+            transform: rotate(-1deg);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 50px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .video-item {
+            background: #2c3e50;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #3498db;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            transform: scale(1);
+        }
+
+        .video-item:hover {
+            transform: translateY(-10px) scale(1.03) rotate(1deg);
+            border-color: #e74c3c;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        .gallery-item {
+            background: #2c3e50;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #e74c3c;
+            transition: all 0.3s ease;
+            cursor: pointer;
             position: relative;
         }
-        
-        .terminal-header {
+
+        .gallery-item:hover {
+            transform: translateY(-5px) rotate(1deg);
+            border-color: #3498db;
+        }
+
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .video-item:hover video {
+            transform: scale(1.08);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(231, 76, 60, 0.9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #333;
+            justify-content: center;
+            gap: 20px;
         }
-        
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
+
+        .video-item:hover .video-overlay {
+            opacity: 1;
         }
-        
-        .terminal-button {
-            width: 12px;
-            height: 12px;
+
+        .video-play-icon {
+            width: 70px;
+            height: 70px;
+            border: 3px solid white;
             border-radius: 50%;
-        }
-        
-        .close { background: #ff5f56; }
-        .minimize { background: #ffbd2e; }
-        .maximize { background: #27ca3f; }
-        
-        .terminal-title {
-            margin-left: 20px;
-            color: #888;
-        }
-        
-        .chat-history {
-            height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 4px;
-        }
-        
-        .message {
-            margin-bottom: 10px;
-            padding: 5px 0;
-        }
-        
-        .user-message {
-            color: #00ff41;
-        }
-        
-        .grok-message {
-            color: #ff6b35;
-            margin-left: 20px;
-        }
-        
-        .prompt {
-            color: #888;
-        }
-        
-        .input-line {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        
-        .prompt-symbol {
-            color: #00ff41;
-            font-weight: bold;
+
+        .video-play-icon:hover {
+            background: white;
+            color: #e74c3c;
+            transform: scale(1.1);
         }
-        
-        .terminal-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #00ff41;
-            font-family: inherit;
-            font-size: inherit;
-            outline: none;
+
+        .video-info {
+            padding: 40px;
         }
-        
-        .terminal-input::placeholder {
-            color: #555;
+
+        .video-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            color: #f39c12;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px #2c3e50;
+            transform: rotate(-1deg);
         }
-        
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 16px;
-            background: #00ff41;
-            animation: blink 1s infinite;
+
+        .video-description {
+            font-size: 1rem;
+            color: #ecf0f1;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-weight: 400;
         }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .info-bar {
-            margin-top: 20px;
-            padding: 10px;
-            background: #1a1a1a;
-            border-radius: 4px;
-            color: #888;
-            font-size: 12px;
-            text-align: center;
+
+        .video-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.9rem;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
-        
-        .x-button {
-            background: #000;
-            border: 2px solid #00ff41;
-            color: #00ff41;
+
+        .video-badge {
+            background: #f39c12;
+            color: white;
             padding: 8px 16px;
-            font-family: inherit;
-            font-size: 12px;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #e74c3c;
+            text-shadow: 1px 1px 0px #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .video-section {
+                padding: 40px 20px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+            
+            .video-container {
+                height: 250px;
+            }
+
+            .x-button {
+                top: 20px;
+                right: 20px;
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img,
+        .gallery-item:hover video {
+            transform: scale(1.05);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(231, 76, 60, 0.9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay-btn {
+            padding: 12px 24px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             text-decoration: none;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
+            display: inline-block;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+        }
+
+        .overlay-btn:hover {
+            background: white;
+            color: #e74c3c;
+        }
+
+        .view-icon {
+            width: 50px;
+            height: 50px;
+            border: 2px solid white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        
-        .x-button:hover {
-            background: #00ff41;
-            color: #000;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+
+        .view-icon:hover {
+            background: white;
+            color: #e74c3c;
         }
-        
-        .typing-indicator {
-            color: #ff6b35;
-            font-style: italic;
+
+        .item-info {
+            padding: 30px;
         }
-        
-        .scrollbar::-webkit-scrollbar {
-            width: 8px;
+
+        .item-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 12px;
+            color: #f39c12;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px #2c3e50;
+            transform: rotate(-1deg);
         }
-        
-        .scrollbar::-webkit-scrollbar-track {
-            background: #0a0a0a;
+
+        .item-description {
+            font-size: 0.95rem;
+            color: #ecf0f1;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 400;
         }
-        
-        .scrollbar::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 4px;
+
+        .item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
-        
-        .scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+
+        .artist-name {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .portfolio-link {
+            color: #e74c3c;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .portfolio-link:hover {
+            border-bottom-color: #e74c3c;
+            text-shadow: 1px 1px 0px #2c3e50;
+        }
+
+        .artwork-number {
+            background: #f39c12;
+            padding: 6px 12px;
+            border-radius: 15px;
+            color: white;
+            font-weight: 700;
+            border: 2px solid #e74c3c;
+            text-shadow: 1px 1px 0px #2c3e50;
+        }
+
+        .next-update {
+            text-align: center;
+            margin: 60px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 0, 150, 0.1), rgba(0, 255, 255, 0.1));
+            border-radius: 20px;
+            border: 3px solid rgba(255, 255, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 0, 150, 0.2);
+        }
+
+        .timer {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5rem;
+            color: #ffff00;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.7);
+        }
+
+        .timer-label {
+            font-size: 0.9rem;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+            
+            .project-details {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .gallery-header h1 {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .gallery-stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal img,
+        .modal video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 15px;
+            border: 3px solid #ff0096;
+            box-shadow: 0 0 40px rgba(255, 0, 150, 0.5);
+        }
+
+        .close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: #ffff00;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.7);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="ascii-header">
-            <pre>
- ██████╗ ██████╗  ██████╗ ██╗  ██╗
-██╔════╝ ██╔══██╗██╔═══██╗██║ ██╔╝
-██║  ███╗██████╔╝██║   ██║█████╔╝ 
-██║   ██║██╔══██╗██║   ██║██╔═██╗ 
-╚██████╔╝██║  ██║╚██████╔╝██║  ██╗
- ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝
-                                   
-    Terminal Interface v2.1.0
-        </pre>
+    <!-- X.com Button -->
+    <a href="https://x.com/GraffitiOnBonk" target="_blank" class="x-button">
+        <svg class="x-icon" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        Follow on X
+    </a>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="logo-container">
+            <div class="logo">
+                GRAFFITI
+                <span class="logo-accent"></span>
+            </div>
+            <div class="gallery-subtitle">Project</div>
         </div>
         
-        <div class="terminal">
-            <div class="terminal-header">
-                <div class="terminal-buttons">
-                    <div class="terminal-button close"></div>
-                    <div class="terminal-button minimize"></div>
-                    <div class="terminal-button maximize"></div>
-                </div>
-                <div class="terminal-title">grok@terminal:~$</div>
+        <div class="welcome-content">
+            <h2 class="welcome-title">Welcome to The Graffiti Project</h2>
+            <p class="welcome-description">
+                We commissioned 50 talented street artists from around the world to create their unique graffiti interpretations of "bonk". 
+                Each piece represents a distinctive urban artistic vision, exploring the concept through various street art mediums and styles. 
+                Currently featuring 6 images and 2 videos, with new artworks added every 15 minutes.
+            </p>
+        </div>
+
+        <div class="project-details">
+            <div class="detail-item">
+                <div class="detail-number">50</div>
+                <div class="detail-label">Street Artists</div>
             </div>
-            
-            <div class="chat-history scrollbar" id="chatHistory">
-                <div class="message">
-                    <span class="prompt">System:</span> GROK Terminal initialized successfully.
-                </div>
-                <div class="message">
-                    <span class="prompt">System:</span> Connected to GROK AI interface.
-                </div>
-                <div class="message grok-message">
-                    <span class="prompt">GROK:</span> Greetings, human! I'm GROK, your AI assistant. I'm here to help you with questions, have conversations, or just chat. What would you like to talk about?
-                </div>
+            <div class="detail-item">
+                <div class="detail-number">6</div>
+                <div class="detail-label">Images + 2 Videos</div>
             </div>
-            
-            <div class="input-line">
-                <span class="prompt-symbol">></span>
-                <input type="text" class="terminal-input" id="userInput" placeholder="Type your message and press Enter..." autocomplete="off">
-                <span class="cursor" id="cursor"></span>
+            <div class="detail-item">
+                <div class="detail-number">15</div>
+                <div class="detail-label">Minute Updates</div>
             </div>
         </div>
         
-        <div class="info-bar">
-            <span>Commands: /help, /clear, /about | Status: Connected | Session: Active</span>
-            <a href="https://x.com/termigrok" target="_blank" class="x-button">
-                <span>𝕏</span> Follow @termigrok
-            </a>
+        <button class="enter-btn" onclick="enterGallery()">Enter Gallery</button>
+        
+        <div class="update-notice">
+            New street art added every 15 minutes
         </div>
     </div>
 
-    <script>
-        const chatHistory = document.getElementById('chatHistory');
-        const userInput = document.getElementById('userInput');
-        const cursor = document.getElementById('cursor');
+    <!-- Gallery Screen -->
+    <div class="gallery-screen" id="galleryScreen">
+        <button class="back-btn" onclick="backToWelcome()">← Back</button>
         
-        let messages = [];
-        let isTyping = false;
-        
-        // GROK responses
-        const grokResponses = [
-            "That's an interesting question! Let me think about that...",
-            "I see what you're getting at. Here's my perspective:",
-            "Fascinating! That reminds me of something I've been pondering.",
-            "Great question! The answer isn't as straightforward as you might think.",
-            "Ah, that's a classic problem. Let me break it down for you:",
-            "I love questions like this! They really make me think.",
-            "That's a deep topic. There are several ways to approach this:",
-            "Excellent point! Here's what I know about that:",
-            "That's something humans often wonder about. My take is:",
-            "Intriguing! That touches on some fundamental concepts."
-        ];
-        
-        const helpTopics = [
-            "philosophy", "technology", "science", "creativity", "problem-solving",
-            "ethics", "future predictions", "space exploration", "artificial intelligence",
-            "quantum physics", "consciousness", "mathematics", "literature", "art"
-        ];
-        
-        function addMessage(type, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            
-            if (type === 'user') {
-                messageDiv.innerHTML = `<span class="prompt">You:</span> <span class="user-message">${content}</span>`;
-            } else if (type === 'grok') {
-                messageDiv.innerHTML = `<span class="prompt">GROK:</span> <span class="grok-message">${content}</span>`;
-            } else {
-                messageDiv.innerHTML = `<span class="prompt">System:</span> ${content}`;
-            }
-            
-            chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-        
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message typing-indicator';
-            typingDiv.id = 'typing';
-            typingDiv.innerHTML = '<span class="prompt">GROK:</span> <span class="grok-message">Thinking...</span>';
-            chatHistory.appendChild(typingDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-        
-        function removeTypingIndicator() {
-            const typing = document.getElementById('typing');
-            if (typing) {
-                typing.remove();
-            }
-        }
-        
-        function generateGrokResponse(userMessage) {
-            const lowerMessage = userMessage.toLowerCase();
-            
-            // Handle commands
-            if (lowerMessage.startsWith('/help')) {
-                return `Available commands:
-/help - Show this help message
-/clear - Clear chat history
-/about - About GROK Terminal
-/topics - Suggest conversation topics
+        <div class="container">
+            <header class="gallery-header">
+                <h1>GRAFFITI<span class="logo-accent"></span></h1>
+                <p class="subtitle">Urban Art Collection</p>
+                <div class="gallery-stats">
+                    <div class="stat">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Images</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Videos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">Min Updates</div>
+                    </div>
+                </div>
+            </header>
 
-You can also just chat with me about anything! I'm here to help.`;
+            <div class="gallery">
+                <!-- Video Section -->
+                <div class="video-section">
+                    <h2 class="section-title">Featured Street Videos</h2>
+                    <div class="video-grid">
+                        <div class="video-item">
+                            <div class="video-container">
+                                <video muted loop>
+                                    <source src="5035009740691155310 (4).mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <a href="https://www.fiverr.com/ryuprism/draw-minimalistic-background-for-any-media?context_referrer=tag_page&source=TagPage&ref_ctx_id=8b151b29c0c249d7bb57b72a27df0c6a&pckg_id=1&pos=5&imp_id=87b89fa5-0d93-40b1-8555-b8ea0aac0840" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="video-play-icon" onclick="event.stopPropagation(); openModal(this.closest('.video-item'))">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-info">
+                                <h3 class="video-title">Urban Pulse</h3>
+                                <p class="video-description">A vibrant exploration of bonk through street art geometry and bold color interactions, creating visual rhythm and movement in urban motion.</p>
+                                <div class="video-meta">
+                                    <a href="https://www.fiverr.com/ryuprism/draw-minimalistic-background-for-any-media?context_referrer=tag_page&source=TagPage&ref_ctx_id=8b151b29c0c249d7bb57b72a27df0c6a&pckg_id=1&pos=5&imp_id=87b89fa5-0d93-40b1-8555-b8ea0aac0840" target="_blank" class="portfolio-link artist-name">Blaze Chen</a>
+                                    <div class="video-badge">Video #001</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-item">
+                            <div class="video-container">
+                                <video muted loop>
+                                    <source src="7745079542511807667 (5).mp4" type="video/mp4">
+                                </video>
+                                <div class="video-overlay">
+                                    <a href="https://www.fiverr.com/ricardomossini7/draw-with-cartoon-art-style-illustration-anything-for-you?context_referrer=tag_page&source=TagPage&ref_ctx_id=aa0c10f9d1324fd489d06d4df04d470a&pckg_id=1&pos=3&imp_id=75d216d0-aaf1-48a9-bcab-a2ce0303f6c5" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="video-play-icon" onclick="event.stopPropagation(); openModal(this.closest('.video-item'))">▶</div>
+                                </div>
+                            </div>
+                            <div class="video-info">
+                                <h3 class="video-title">Wall Echo</h3>
+                                <p class="video-description">Clean tags and street textures capture the essence of bonk through refined urban simplicity and thoughtful composition in fluid motion.</p>
+                                <div class="video-meta">
+                                    <a href="https://www.fiverr.com/ricardomossini7/draw-with-cartoon-art-style-illustration-anything-for-you?context_referrer=tag_page&source=TagPage&ref_ctx_id=aa0c10f9d1324fd489d06d4df04d470a&pckg_id=1&pos=3&imp_id=75d216d0-aaf1-48a9-bcab-a2ce0303f6c5" target="_blank" class="portfolio-link artist-name">Stencil Lars</a>
+                                    <div class="video-badge">Video #002</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Section -->
+                <div class="image-section">
+                    <h2 class="section-title">Street Art Gallery</h2>
+                    <div class="image-grid">
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image1.png" alt="Street Art Bonk">
+                                <div class="overlay">
+                                    <a href="https://www.fiverr.com/ipunkherlambang/create-cartoon-illustration-in-retro-dan-pop-art-style?context_referrer=tag_page&source=TagPage&ref_ctx_id=28a8028f105e40b49cde96cd7e868c03&pckg_id=1&pos=4&imp_id=edb972a0-62ff-4af2-ad86-0a39528706ba" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">Subway Expression</h3>
+                                <p class="item-description">Raw emotion and expressive spray work translate the concept of bonk into a powerful urban visual narrative.</p>
+                                <div class="item-meta">
+                                    <a href="https://www.fiverr.com/ipunkherlambang/create-cartoon-illustration-in-retro-dan-pop-art-style?context_referrer=tag_page&source=TagPage&ref_ctx_id=28a8028f105e40b49cde96cd7e868c03&pckg_id=1&pos=4&imp_id=edb972a0-62ff-4af2-ad86-0a39528706ba" target="_blank" class="portfolio-link artist-name">Bella Spray</a>
+                                    <span class="artwork-number">#003</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image2.jpg" alt="Urban Art Bonk">
+                                <div class="overlay">
+                                    <a href="https://www.fiverr.com/bondpaint_/draw-anime-art-for-everything?context_referrer=tag_page&source=TagPage&ref_ctx_id=6872d75889ca40afae27de3daf4ee566&pckg_id=1&pos=8&imp_id=85586a72-a342-4629-a91e-8e8971dda29c" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">Street Dream</h3>
+                                <p class="item-description">Surreal street imagery and unexpected wall art explore bonk through the lens of urban subconscious interpretation.</p>
+                                <div class="item-meta">
+                                    <a href="https://www.fiverr.com/bondpaint_/draw-anime-art-for-everything?context_referrer=tag_page&source=TagPage&ref_ctx_id=6872d75889ca40afae27de3daf4ee566&pckg_id=1&pos=8&imp_id=85586a72-a342-4629-a91e-8e8971dda29c" target="_blank" class="portfolio-link artist-name">Urban Jean</a>
+                                    <span class="artwork-number">#004</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image3.png" alt="Digital Street Art">
+                                <div class="overlay">
+                                    <a href="https://www.fiverr.com/secantfx/create-your-custom-unique-3d-toon-style-character-with-ai?context_referrer=tag_page&source=TagPage&ref_ctx_id=0da055bb352c4b419d23688e99fda40c&pckg_id=1&pos=9&seller_online=true&imp_id=e0a62e8e-cd86-41c2-b8c5-acaceee042e9" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">Digital Tags</h3>
+                                <p class="item-description">Contemporary digital street techniques merge traditional graffiti with modern technology to redefine bonk for the digital age.</p>
+                                <div class="item-meta">
+                                    <a href="https://www.fiverr.com/secantfx/create-your-custom-unique-3d-toon-style-character-with-ai?context_referrer=tag_page&source=TagPage&ref_ctx_id=0da055bb352c4b419d23688e99fda40c&pckg_id=1&pos=9&seller_online=true&imp_id=e0a62e8e-cd86-41c2-b8c5-acaceee042e9" target="_blank" class="portfolio-link artist-name">Pixel Bomber</a>
+                                    <span class="artwork-number">#005</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image4.png" alt="Classic Street Art">
+                                <div class="overlay">
+                                    <a href="https://www.fiverr.com/baxtli/color-sketch-anime-illustration-for-you?context_referrer=tag_page&source=TagPage&ref_ctx_id=057b073fac544cb092f500ea966ff696&pckg_id=1&pos=14&imp_id=7e5660df-f391-4b49-b265-4911ba846a86" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">Old School Wall</h3>
+                                <p class="item-description">Traditional street art techniques and timeless graffiti aesthetics bring historical depth to contemporary interpretations of bonk.</p>
+                                <div class="item-meta">
+                                    <a href="https://www.fiverr.com/baxtli/color-sketch-anime-illustration-for-you?context_referrer=tag_page&source=TagPage&ref_ctx_id=057b073fac544cb092f500ea966ff696&pckg_id=1&pos=14&imp_id=7e5660df-f391-4b49-b265-4911ba846a86" target="_blank" class="portfolio-link artist-name">Sofia Wildstyle</a>
+                                    <span class="artwork-number">#006</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image7.jpg" alt="Urban Wall Art">
+                                <div class="overlay">
+                                    <a href="https://marcusthompsonart.com" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">City Pulse</h3>
+                                <p class="item-description">City rhythms and metropolitan energy converge to express bonk through the lens of contemporary urban street art experience.</p>
+                                <div class="item-meta">
+                                    <a href="https://marcusthompsonart.com" target="_blank" class="portfolio-link artist-name">Marcus Tags</a>
+                                    <span class="artwork-number">#007</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item">
+                            <div class="media-container">
+                                <img src="image10.jpg" alt="Nature Street Art">
+                                <div class="overlay">
+                                    <a href="https://www.fiverr.com/v_garcia/sketch-anything-for-you-ask-me-the-price?context_referrer=gig_page&source=similar_gigs&ref_ctx_id=965d6c298ae74a6a995abde08d153530&context=recommendation&pckg_id=1&pos=1&mod=ff&context_alg=t2g_dfm&imp_id=8f91a162-c5a5-4ab6-9893-aadc07b57750" target="_blank" class="overlay-btn">View Portfolio</a>
+                                    <div class="view-icon" onclick="event.stopPropagation(); openModal(this.closest('.gallery-item'))">⟲</div>
+                                </div>
+                            </div>
+                            <div class="item-info">
+                                <h3 class="item-title">Green Streets</h3>
+                                <p class="item-description">Organic forms and natural textures translate bonk through street art language of environmental consciousness and urban nature.</p>
+                                <div class="item-meta">
+                                    <a href="https://www.fiverr.com/v_garcia/sketch-anything-for-you-ask-me-the-price?context_referrer=gig_page&source=similar_gigs&ref_ctx_id=965d6c298ae74a6a995abde08d153530&context=recommendation&pckg_id=1&pos=1&mod=ff&context_alg=t2g_dfm&imp_id=8f91a162-c5a5-4ab6-9893-aadc07b57750" target="_blank" class="portfolio-link artist-name">Elena Verdant</a>
+                                    <span class="artwork-number">#008</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="next-update">
+                <div class="timer" id="timer">14:23</div>
+                <div class="timer-label">Until next street art reveal</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <div class="modal-content" id="modal-content"></div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let minutes = 14;
+        let seconds = 23;
+
+        function updateTimer() {
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (seconds === 0) {
+                    if (minutes === 0) {
+                        // Reset timer and simulate new artwork
+                        minutes = 14;
+                        seconds = 59;
+                        // You could add new artwork loading logic here
+                    } else {
+                        minutes--;
+                        seconds = 59;
+                    }
+                } else {
+                    seconds--;
+                }
             }
-            
-            if (lowerMessage.startsWith('/clear')) {
-                setTimeout(() => {
-                    chatHistory.innerHTML = '<div class="message"><span class="prompt">System:</span> Chat history cleared.</div>';
-                }, 500);
-                return "Chat cleared! Ready for a fresh start.";
-            }
-            
-            if (lowerMessage.startsWith('/about')) {
-                return `GROK Terminal v2.1.0
-A simulated AI chat interface with retro terminal aesthetics.
-This is a demonstration interface - responses are generated locally.
-Built with HTML, CSS, and JavaScript.`;
-            }
-            
-            if (lowerMessage.startsWith('/topics')) {
-                const randomTopics = helpTopics.sort(() => 0.5 - Math.random()).slice(0, 5);
-                return `Here are some topics we could explore: ${randomTopics.join(', ')}. What interests you?`;
-            }
-            
-            // Generate contextual responses
-            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-                return "Hello there! Great to meet you. What's on your mind today?";
-            }
-            
-            if (lowerMessage.includes('how are you')) {
-                return "I'm doing wonderfully! My circuits are humming and my algorithms are sharp. How are you doing?";
-            }
-            
-            if (lowerMessage.includes('what') && lowerMessage.includes('you')) {
-                return "I'm GROK, an AI assistant living in this terminal. I enjoy deep conversations, solving problems, and exploring ideas with humans like yourself!";
-            }
-            
-            if (lowerMessage.includes('bye') || lowerMessage.includes('goodbye')) {
-                return "Farewell for now! It's been a pleasure chatting with you. Feel free to come back anytime!";
-            }
-            
-            // Default responses with some variety
-            const randomResponse = grokResponses[Math.floor(Math.random() * grokResponses.length)];
-            const elaborations = [
-                "What do you think about that perspective?",
-                "Does that align with your understanding?",
-                "I'd love to hear your thoughts on this!",
-                "What's your take on this topic?",
-                "Have you encountered something similar before?",
-                "This opens up some interesting questions, doesn't it?"
-            ];
-            
-            const elaboration = elaborations[Math.floor(Math.random() * elaborations.length)];
-            
-            return `${randomResponse} ${elaboration}`;
         }
-        
-        function handleUserInput() {
-            const message = userInput.value.trim();
-            if (!message || isTyping) return;
-            
-            addMessage('user', message);
-            userInput.value = '';
-            
-            isTyping = true;
-            showTypingIndicator();
-            
-            // Simulate thinking time
-            setTimeout(() => {
-                removeTypingIndicator();
-                const response = generateGrokResponse(message);
-                addMessage('grok', response);
-                isTyping = false;
-            }, 1000 + Math.random() * 2000);
+
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+
+        // Auto-play videos on hover for both video items and gallery videos
+        document.querySelectorAll('.video-item video, .gallery-item video').forEach(video => {
+            const item = video.closest('.video-item, .gallery-item');
+            item.addEventListener('mouseenter', () => video.play());
+            item.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+        });
+
+        function enterGallery() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('galleryScreen').classList.add('active');
         }
-        
-        userInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleUserInput();
+
+        function backToWelcome() {
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('galleryScreen').classList.remove('active');
+        }
+
+        function openModal(element) {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const mediaElement = element.querySelector('img, video');
+            
+            modalContent.innerHTML = '';
+            
+            if (mediaElement.tagName === 'VIDEO') {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.src = mediaElement.querySelector('source').src;
+                modalContent.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = mediaElement.src;
+                img.alt = mediaElement.alt;
+                modalContent.appendChild(img);
             }
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
-        
-        // Focus input on page load
-        userInput.focus();
-        
-        // Hide cursor when input is not focused
-        userInput.addEventListener('focus', () => {
-            cursor.style.display = 'inline-block';
-        });
-        
-        userInput.addEventListener('blur', () => {
-            cursor.style.display = 'none';
-        });
-        
-        // Keep cursor visible initially
-        cursor.style.display = 'inline-block';
     </script>
 </body>
 </html>
